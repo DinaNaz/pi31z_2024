@@ -5,39 +5,19 @@ require_once('IFigure.php');
 class King extends Figure {
     protected array $icon = ["\u{265A}", "\u{2654}"];
 
-}
+    public function canMove(int $from_row, int $from_col, int $to_row, int $to_col, Board $board): bool {
+        // Король может ходить максимум на одну клетку в любом направлении
+        $row_diff = abs($to_row - $from_row);
+        $col_diff = abs($to_col - $from_col);
 
-// Функция для определения возможных ходов короля
-function getKingMoves($row, $col)
-{
-    // Массив для хранения всех возможных ходов
-    $moves = [];
-    
-    // Определяем все возможные направления движения короля
-    $directions = [
-        [-1, -1], [-1, 0], [-1, 1],
-        [0, -1],          [0, 1],
-        [1, -1], [1, 0], [1, 1]
-    ];
-    
-    foreach ($directions as [$dRow, $dCol]) {
-        $newRow = $row + $dRow;
-        $newCol = $col + $dCol;
-        
-        // Проверяем, находится ли новая позиция внутри доски
-        if ($newRow >= 0 && $newRow <= 7 && $newCol >= 0 && $newCol <= 7) {
-            $moves[] = [$newRow, $newCol];
+        if ($row_diff <= 1 && $col_diff <= 1) {
+            // Проверяем, что конечное положение не занято своей же фигурой
+            $target_item = $board->getItem($to_row, $to_col);
+            if ($target_item === null || $target_item->color !== $this->color) {
+                return true;
+            }
         }
+
+        return false;
     }
-    
-    return $moves;
-}
-
-// Пример использования функции
-$kingPosition = [4, 4]; // Начальная позиция короля
-$possibleMoves = getKingMoves($kingPosition[0], $kingPosition[1]);
-
-echo "Возможные ходы короля:\n";
-foreach ($possibleMoves as $move) {
-    echo "[$move[0], $move[1]]\n";
 }
